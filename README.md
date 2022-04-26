@@ -4,7 +4,7 @@ This is the SPM example app for [DishtrackerSDK for iOS](https://github.com/Moon
 
 ## Requirements
 
-* The latest [Xcode](https://developer.apple.com/xcode/). (min 13.3.0)
+* The latest [Xcode](https://developer.apple.com/xcode/). (min 13.3.1)
 
 ## Getting Started
 

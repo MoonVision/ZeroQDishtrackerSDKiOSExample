@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F64C01FB281861E500CFFD49 /* Dishtracker in Frameworks */ = {isa = PBXBuildFile; productRef = F64C01FA281861E500CFFD49 /* Dishtracker */; };
 		F67CA97527F666A4006F9B64 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67CA97327F666A4006F9B64 /* AppDelegate.swift */; };
 		F67CA97627F666A4006F9B64 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67CA97427F666A4006F9B64 /* SceneDelegate.swift */; };
 		F6D0D40C27F64B84007E246A /* DishtrackerCoreExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D0D40B27F64B84007E246A /* DishtrackerCoreExampleApp.swift */; };
 		F6D0D41027F64B85007E246A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6D0D40F27F64B85007E246A /* Assets.xcassets */; };
 		F6D0D41327F64B85007E246A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6D0D41227F64B85007E246A /* Preview Assets.xcassets */; };
-		F6D0D41E27F6501A007E246A /* Dishtracker in Frameworks */ = {isa = PBXBuildFile; productRef = F6D0D41D27F6501A007E246A /* Dishtracker */; };
 		F6F1E88227FE0A9200F62194 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F1E87F27FE0A9200F62194 /* ContentView.swift */; };
 		F6F1E88327FE0A9200F62194 /* Theme+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F1E88127FE0A9200F62194 /* Theme+Test.swift */; };
 		F6F1E89127FE0D1D00F62194 /* Location+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F1E89027FE0D1D00F62194 /* Location+Test.swift */; };
@@ -26,7 +26,6 @@
 		F6D0D40B27F64B84007E246A /* DishtrackerCoreExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DishtrackerCoreExampleApp.swift; sourceTree = "<group>"; };
 		F6D0D40F27F64B85007E246A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6D0D41227F64B85007E246A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		F6D0D41B27F64CC6007E246A /* ZeroQDishtrackerSDKiOS */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ZeroQDishtrackerSDKiOS; path = ../ZeroQDishtrackerSDKiOS; sourceTree = "<group>"; };
 		F6F1E87F27FE0A9200F62194 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F6F1E88127FE0A9200F62194 /* Theme+Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+Test.swift"; sourceTree = "<group>"; };
 		F6F1E89027FE0D1D00F62194 /* Location+Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Location+Test.swift"; sourceTree = "<group>"; };
@@ -37,7 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6D0D41E27F6501A007E246A /* Dishtracker in Frameworks */,
+				F64C01FB281861E500CFFD49 /* Dishtracker in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +87,6 @@
 		F6D0D41927F64C36007E246A /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				F6D0D41B27F64CC6007E246A /* ZeroQDishtrackerSDKiOS */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -134,7 +132,7 @@
 			);
 			name = DishtrackerCoreExample;
 			packageProductDependencies = (
-				F6D0D41D27F6501A007E246A /* Dishtracker */,
+				F64C01FA281861E500CFFD49 /* Dishtracker */,
 			);
 			productName = DishtrackerCore;
 			productReference = F6D0D40827F64B84007E246A /* DishtrackerCoreExample.app */;
@@ -164,6 +162,9 @@
 				Base,
 			);
 			mainGroup = F6D0D3FF27F64B84007E246A;
+			packageReferences = (
+				F64C01F92818619A00CFFD49 /* XCRemoteSwiftPackageReference "ZeroQDishtrackerSDKiOS" */,
+			);
 			productRefGroup = F6D0D40927F64B84007E246A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -399,9 +400,21 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		F64C01F92818619A00CFFD49 /* XCRemoteSwiftPackageReference "ZeroQDishtrackerSDKiOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MoonVision/ZeroQDishtrackerSDKiOS";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
-		F6D0D41D27F6501A007E246A /* Dishtracker */ = {
+		F64C01FA281861E500CFFD49 /* Dishtracker */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F64C01F92818619A00CFFD49 /* XCRemoteSwiftPackageReference "ZeroQDishtrackerSDKiOS" */;
 			productName = Dishtracker;
 		};
 /* End XCSwiftPackageProductDependency section */
