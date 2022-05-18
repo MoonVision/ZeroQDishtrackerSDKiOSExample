@@ -12,6 +12,26 @@ import DishtrackerCore
 
 class ContentViewModel: ObservableObject {
     let location: Location
+    let products: [Product] = [
+        Product(
+            id: UUID().uuidString,
+            label: "food.main.example0",
+            name: "Example 0",
+            plu: "PLU0"
+        ),
+        Product(
+            id: UUID().uuidString,
+            label: "food.main.example1",
+            name: "Example 1",
+            plu: "PLU1"
+        ),
+        Product(
+            id: UUID().uuidString,
+            label: "food.main.example2",
+            name: "Example 2",
+            plu: "PLU2"
+        )
+    ]
     let theme: Theme
     private var orientationLock: OrientationLockProtocol
     @Published private(set) var text: String = ""
@@ -76,12 +96,13 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Text(self.viewModel.text)
-                .padding()
 
             Spacer()
 
             Button {
-                self.start()
+                self.start(
+                    products: self.viewModel.products
+                )
             } label: {
                 Text("Start")
             }
@@ -89,12 +110,13 @@ struct ContentView: View {
             // print("onAppear")
         }.onDisappear {
             // print("onDisappear")
-        }.padding(16).padding(.bottom, 64)
+        }.padding(16).padding(.bottom, 32)
         .accentColor(self.viewModel.theme.primary.color)
     }
 
-    private func start() {
+    private func start(products: [Product]) {
         self.viewModel.dishtracker.start(
+            products: products,
             window: self.sceneDelegate.window!
         )
     }
