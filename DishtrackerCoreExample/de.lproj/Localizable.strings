@@ -1,0 +1,9 @@
+/*
+  Localizable.strings
+  DishtrackerCoreExample
+
+  Created by Stefan Fessler on 12.04.22.
+  Copyright © 2024 Dishtracker GmbH. All rights reserved.
+*/
+
+"NSCameraUsageDescription" = "Die App benötigt die Kamera für die Eingabe";

@@ -3,13 +3,12 @@
 //  DishtrackerCoreExample
 //
 //  Created by Stefan Fessler on 24.03.22.
-//  Copyright © 2022 Dishtracker GmbH. All rights reserved.
+//  Copyright © 2024 Dishtracker GmbH. All rights reserved.
 //
 
 import Foundation
 import UIKit
 import SwiftUI
-import DishtrackerCore
 
 class SceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
@@ -37,7 +36,6 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     }
 
     private func setupKeyWindow(in scene: UIWindowScene) {
-        let window = UIWindow(windowScene: scene)
-        self.window = window
+        self.window = UIWindow(windowScene: scene)
     }
 }

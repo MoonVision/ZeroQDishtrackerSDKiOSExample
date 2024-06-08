@@ -1,12 +1,13 @@
 {
+  "originHash" : "1d631fa2bc019103ed29a83101bb59719925e39417f0dd12db81bd47a6baf72d",
   "pins" : [
     {
       "identity" : "alamofire",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire",
       "state" : {
-        "revision" : "354dda32d89fc8cd4f5c46487f64957d355f53d8",
-        "version" : "5.6.1"
+        "revision" : "f455c2975872ccd2d9c81594c658af65716e9b9a",
+        "version" : "5.9.1"
       }
     },
     {
@@ -14,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/andreamazz/AMPopTip",
       "state" : {
-        "revision" : "514a0ff82649db240463f690143834ff8a8ee49f",
-        "version" : "4.6.1"
+        "revision" : "db495eea0747a3493ca8b3c737d037c0090973db",
+        "version" : "4.12.0"
       }
     },
     {
@@ -35,16 +36,7 @@
         "revision" : "7219cad3098637176ace311510d11467dbfb9bb0",
         "version" : "2.7.1"
       }
-    },
-    {
-      "identity" : "zeroqdishtrackersdkios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/MoonVision/ZeroQDishtrackerSDKiOS",
-      "state" : {
-        "branch" : "main",
-        "revision" : "2ead7635dc5d8773d249c7e5f78400cd416e0f51"
-      }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

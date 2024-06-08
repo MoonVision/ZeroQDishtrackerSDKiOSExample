@@ -3,95 +3,64 @@
 //  DishtrackerCoreExample
 //
 //  Created by Stefan Fessler on 24.03.22.
-//  Copyright © 2022 Dishtracker GmbH. All rights reserved.
+//  Copyright © 2024 Dishtracker GmbH. All rights reserved.
 //
 
 import SwiftUI
 import Combine
 import DishtrackerCore
 
-class ContentViewModel: ObservableObject {
-    let location: Location
-    let products: [Product] = [
-        Product(
-            id: UUID().uuidString,
-            label: "food.main.example0",
-            name: "Example 0",
-            plu: "PLU0"
-        ),
-        Product(
-            id: UUID().uuidString,
-            label: "food.main.example1",
-            name: "Example 1",
-            plu: "PLU1"
-        ),
-        Product(
-            id: UUID().uuidString,
-            label: "food.main.example2",
-            name: "Example 2",
-            plu: "PLU2"
-        )
-    ]
-    let theme: Theme
-    private var orientationLock: OrientationLockProtocol
+@MainActor
+final class ContentViewModel: ObservableObject {
+    private let theme: Theme
     @Published private(set) var text: String = ""
 
-    init(
-        theme: Theme,
-        location: Location,
-        orientationLock: OrientationLockProtocol
-    ) {
-        self.theme = theme
-        self.location = location
-        self.orientationLock = orientationLock
+    var settings: DishtrackerSettings {
+        DishtrackerSettings(
+            authToken: "Bearer xxx",
+            theme: self.theme,
+            locale: Locale.current,
+            isFixedDesk: Platform.isPad
+        )
     }
 
     lazy var dishtracker = Dishtracker(
-        location: self.location,
         application: UIApplication.shared,
-        theme: self.theme,
-        delegateCheckout: self,
-        onCompletion: { [weak self] checkoutItems in
-            guard let self = self else {
-                return
-            }
-            self.text = checkoutItems.info
-        },
+        settings: self.settings,
         onCancel: { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.text = "Cancel"
+            self?.text = "Canceled"
         },
         onError: { [weak self] error in
-            guard let self = self else {
-                return
-            }
-            self.text = error.localizedDescription
+            self?.text = "Error: \(error.localizedDescription)"
+        },
+        onCheckoutCompletion: { [weak self] checkoutResult in
+            self?.text = checkoutResult.debugDescription
+        },
+        onLocationCompletion: { [weak self] location in
+            self?.location = location
+            self?.text = "Location: \(location.name)"
         }
     )
-}
 
-extension ContentViewModel: ShowCheckoutViewControllerProtocol {
-    func showCheckoutViewController(
-        checkoutItems: [CheckoutItem],
-        image: UIImage,
-        location: Location
-    ) {
-        print("CheckoutItems: \(checkoutItems.description)")
-        print("Image: \(image)")
-        print("Location: \(location)")
+    var location: Location? {
+        didSet {
+            self.text = "Location: \(self.location?.name ?? "?")"
+        }
     }
 
-    func cancel() {
-        print("Cancel")
+    init(
+        theme: Theme
+    ) {
+        self.theme = theme
+
+        self.text = "Version: \(self.dishtracker.version)"
     }
 }
 
 struct ContentView: View {
-    @ObservedObject internal var viewModel: ContentViewModel
+    @Environment(\.theme) var theme
+    @ObservedObject var viewModel: ContentViewModel
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    // @EnvironmentObject var appDelegate: AppDelegate
 
     var body: some View {
         VStack {
@@ -100,24 +69,69 @@ struct ContentView: View {
             Spacer()
 
             Button {
-                self.start(
-                    products: self.viewModel.products
-                )
+                self.setupLocation()
             } label: {
-                Text("Start")
+                Text("Setup Location for Test")
             }
-        }.onAppear {
+            .frame(height: 44)
+            .foregroundColor(self.theme.primary.color)
+
+            Button {
+                self.startCheckoutScan()
+            } label: {
+                Text("Start Checkout Scan")
+            }
+            .frame(height: 44)
+            .foregroundColor(self.theme.primary.color)
+
+            Button {
+                self.startLocationScan()
+            } label: {
+                Text("Start Location Scan")
+            }
+            .frame(height: 44)
+            .foregroundColor(self.theme.primary.color)
+        }
+        .onAppear {
             // print("onAppear")
-        }.onDisappear {
+        }
+        .onDisappear {
             // print("onDisappear")
-        }.padding(16).padding(.bottom, 32)
-        .accentColor(self.viewModel.theme.primary.color)
+        }
+        .padding(8)
+        .foregroundColor(.black)
     }
 
-    private func start(products: [Product]) {
-        self.viewModel.dishtracker.start(
-            products: products,
-            window: self.sceneDelegate.window!
+    private let userSettings = DishtrackerUserSettings(
+        userId: UUID().uuidString,
+        isAdmin: true
+    )
+
+    private func startCheckoutScan() {
+        guard let window = self.sceneDelegate.window, let location = self.viewModel.location else {
+            self.startLocationScan()
+            return
+        }
+
+        self.viewModel.dishtracker.startCheckoutScan(
+            window: window,
+            configID: location.configID,
+            transactionID: UUID().uuidString,
+            userSettings: self.userSettings
         )
+    }
+
+    private func startLocationScan() {
+        guard let window = self.sceneDelegate.window else {
+            return
+        }
+        self.viewModel.dishtracker.startLocationScan(
+            window: window,
+            userSettings: self.userSettings
+        )
+    }
+
+    private func setupLocation() {
+        self.viewModel.location = .dishtracker
     }
 }

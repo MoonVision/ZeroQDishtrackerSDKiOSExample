@@ -3,43 +3,35 @@
 //  DishtrackerCoreExample
 //
 //  Created by Stefan Fessler on 24.03.22.
-//  Copyright © 2022 Dishtracker GmbH. All rights reserved.
+//  Copyright © 2024 Dishtracker GmbH. All rights reserved.
 //
 
 import Foundation
 import DishtrackerCore
+import SwiftUI
 import UIKit
 
-class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, OrientationLockProtocol {
-    var orientationLock: UIInterfaceOrientationMask = .all
-    let location = Location.test // TODO: Location
-    let theme = Theme.test // TODO: Theme
+class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
+    let theme = Theme.default
 
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        // TODO: OrientationLock
-        OrientationHelper.shared.update(orientationLocker: self)
 
-        // TODO: Appearance
-        Appearance.applyAppearance(tintColor: self.theme.primary)
-
-        let font = UIFont.preferredFont(forTextStyle: UIFont.TextStyle(rawValue: "HelveticaNeue"))
-        UILabel.appearance().font = font
-        UITextView.appearance().font = font
-        UITextField.appearance().font = font
+        Appearance.applyAppearance(
+            theme: self.theme
+        )
 
         return true
     }
 
-    // TODO: OrientationLock
     func application(
         _ application: UIApplication,
         supportedInterfaceOrientationsFor
         window: UIWindow?
     ) -> UIInterfaceOrientationMask {
-        return self.orientationLock
+        return .all
     }
 
     func application(
@@ -47,7 +39,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, Orientatio
         configurationForConnecting connectingSceneSession: UISceneSession,
         options: UIScene.ConnectionOptions
     ) -> UISceneConfiguration {
-        let sceneConfig = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        let sceneConfig = UISceneConfiguration(
+            name: nil,
+            sessionRole: connectingSceneSession.role
+        )
         sceneConfig.delegateClass = SceneDelegate.self
         return sceneConfig
     }
