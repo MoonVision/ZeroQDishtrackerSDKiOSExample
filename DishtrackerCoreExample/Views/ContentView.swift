@@ -64,34 +64,41 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Text(self.viewModel.text)
+            VStack {
+                Text(self.viewModel.text)
 
-            Spacer()
+                Spacer()
 
-            Button {
-                self.setupLocation()
-            } label: {
-                Text("Setup Location for Test")
+                Button {
+                    self.setupLocation()
+                } label: {
+                    Text("Setup Location for Test")
+                }
+                .frame(height: 48)
+                .foregroundColor(self.theme.primary.color)
+
+                Button {
+                    self.startCheckoutScan()
+                } label: {
+                    Text("Start Checkout Scan")
+                }
+                .frame(height: 48)
+                .foregroundColor(self.theme.primary.color)
+
+                Button {
+                    self.startLocationScan()
+                } label: {
+                    Text("Start Location Scan")
+                }
+                .frame(height: 48)
+                .foregroundColor(self.theme.primary.color)
             }
-            .frame(height: 44)
-            .foregroundColor(self.theme.primary.color)
-
-            Button {
-                self.startCheckoutScan()
-            } label: {
-                Text("Start Checkout Scan")
-            }
-            .frame(height: 44)
-            .foregroundColor(self.theme.primary.color)
-
-            Button {
-                self.startLocationScan()
-            } label: {
-                Text("Start Location Scan")
-            }
-            .frame(height: 44)
-            .foregroundColor(self.theme.primary.color)
+            .foregroundColor(.black)
+            .edgesIgnoringSafeArea(.all)
+            .ignoresSafeArea()
+            .background(self.theme.background.color)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             // print("onAppear")
         }
@@ -103,7 +110,7 @@ struct ContentView: View {
     }
 
     private let userSettings = DishtrackerUserSettings(
-        userId: UUID().uuidString,
+        userID: UUID().uuidString,
         isAdmin: true
     )
 
