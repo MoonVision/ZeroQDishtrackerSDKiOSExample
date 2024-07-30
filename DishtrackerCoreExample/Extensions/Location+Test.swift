@@ -11,7 +11,7 @@ import DishtrackerCore
 
 extension Location {
     static let dishtracker = Location(
-        configID: "configID",
+        locationID: "locationID",
         name: "Demo"
     )
 }

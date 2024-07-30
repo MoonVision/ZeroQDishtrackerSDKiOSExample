@@ -122,7 +122,7 @@ struct ContentView: View {
 
         self.viewModel.dishtracker.startCheckoutScan(
             window: window,
-            configID: location.configID,
+            locationID: location.locationID,
             transactionID: UUID().uuidString,
             userSettings: self.userSettings
         )
