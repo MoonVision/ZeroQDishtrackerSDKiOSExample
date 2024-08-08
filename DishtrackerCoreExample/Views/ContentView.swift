@@ -52,8 +52,7 @@ final class ContentViewModel: ObservableObject {
         theme: Theme
     ) {
         self.theme = theme
-
-        self.text = "Version: \(self.dishtracker.version)"
+        self.text = "SDK BundleVersion: \(self.dishtracker.bundleVersion)"
     }
 }
 
@@ -66,6 +65,7 @@ struct ContentView: View {
         VStack {
             VStack {
                 Text(self.viewModel.text)
+                    .textSelection(.enabled)
 
                 Spacer()
 
