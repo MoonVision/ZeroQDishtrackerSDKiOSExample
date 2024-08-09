@@ -12,7 +12,7 @@ import SwiftUI
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
-    let theme = Theme.default
+    let theme = Theme.dishtracker
 
     func application(
         _ application: UIApplication,

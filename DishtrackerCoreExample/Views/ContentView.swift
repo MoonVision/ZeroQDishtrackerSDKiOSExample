@@ -37,15 +37,27 @@ final class ContentViewModel: ObservableObject {
             self?.text = checkoutResult.debugDescription
         },
         onLocationCompletion: { [weak self] location in
-            self?.location = location
-            self?.text = "Location: \(location.name)"
+            guard let self else { return }
+            self.setLocation(
+                location: location
+            )
         }
     )
 
-    var location: Location? {
+    private(set) var location: Location? {
         didSet {
-            self.text = "Location: \(self.location?.name ?? "?")"
+            self.setLocationText()
         }
+    }
+
+    private func setLocationText() {
+        self.text = "Location: \(self.location?.name ?? "?")\nConfigName: \(self.location?.configName ?? "default")"
+    }
+
+    func setLocation(
+        location: Location
+    ) {
+        self.location = location
     }
 
     init(
@@ -56,10 +68,13 @@ final class ContentViewModel: ObservableObject {
     }
 }
 
+@MainActor
 struct ContentView: View {
     @Environment(\.theme) var theme
     @ObservedObject var viewModel: ContentViewModel
     @EnvironmentObject var sceneDelegate: SceneDelegate
+
+    @State private var showingSetupAlert = false
 
     var body: some View {
         VStack {
@@ -70,14 +85,6 @@ struct ContentView: View {
                 Spacer()
 
                 Button {
-                    self.setupLocation()
-                } label: {
-                    Text("Setup Location for Test")
-                }
-                .frame(height: 48)
-                .foregroundColor(self.theme.primary.color)
-
-                Button {
                     self.startCheckoutScan()
                 } label: {
                     Text("Start Checkout Scan")
@@ -86,27 +93,55 @@ struct ContentView: View {
                 .foregroundColor(self.theme.primary.color)
 
                 Button {
-                    self.startLocationScan()
+                    self.showingSetupAlert = true
                 } label: {
-                    Text("Start Location Scan")
+                    Text("Setup Location")
                 }
                 .frame(height: 48)
-                .foregroundColor(self.theme.primary.color)
+                .foregroundColor(self.theme.secondary.color)
+                .actionSheet(isPresented: self.$showingSetupAlert) {
+                    let locations: [Location] = [
+                    ]
+
+                    var buttons: [ActionSheet.Button] = locations.map({ location in
+                        .default(Text(location.info)) {
+                            self.viewModel.setLocation(
+                                location: location
+                            )
+                        }
+                    })
+                    buttons.append(.cancel())
+                    buttons.append(
+                        .default(Text("Start Location Scan")) {
+                            self.startLocationScan()
+                        }
+                    )
+
+                    return ActionSheet(
+                        title: Text("Setup Location"),
+                        message: Text("Choose one of those:"),
+                        buttons: buttons
+                    )
+                }
             }
-            .foregroundColor(.black)
-            .edgesIgnoringSafeArea(.all)
-            .ignoresSafeArea()
-            .background(self.theme.background.color)
+            .padding(.top, 64)
+            .padding(.bottom, 32)
+            .padding(.horizontal, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             // print("onAppear")
+            if self.viewModel.location == nil {
+                self.showingSetupAlert = true
+            }
         }
         .onDisappear {
             // print("onDisappear")
         }
-        .padding(8)
         .foregroundColor(.black)
+        .edgesIgnoringSafeArea(.all)
+        .ignoresSafeArea()
+        .background(self.theme.background.color)
     }
 
     private let userSettings = DishtrackerUserSettings(
@@ -115,14 +150,16 @@ struct ContentView: View {
     )
 
     private func startCheckoutScan() {
-        guard let window = self.sceneDelegate.window, let location = self.viewModel.location else {
+        guard let window = self.sceneDelegate.window,
+              let location = self.viewModel.location
+        else {
             self.startLocationScan()
             return
         }
 
         self.viewModel.dishtracker.startCheckoutScan(
             window: window,
-            locationID: location.locationID,
+            location: location,
             transactionID: UUID().uuidString,
             userSettings: self.userSettings
         )
@@ -136,9 +173,5 @@ struct ContentView: View {
             window: window,
             userSettings: self.userSettings
         )
-    }
-
-    private func setupLocation() {
-        self.viewModel.location = .dishtracker
     }
 }
