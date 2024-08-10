@@ -51,7 +51,7 @@ final class ContentViewModel: ObservableObject {
     }
 
     private func setLocationText() {
-        self.text = "Location: \(self.location?.name ?? "?")\nConfigName: \(self.location?.configName ?? "default")"
+        self.text = "Location: \(self.location?.name ?? "?")\nConfigName: \(self.location?.configName ?? "default")\nBaseURL: \(self.location?.baseURL?.absoluteString ?? "default")"
     }
 
     func setLocation(
