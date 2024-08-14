@@ -12,7 +12,7 @@ import DishtrackerCore
 
 @MainActor
 final class ContentViewModel: ObservableObject {
-    private let theme: Theme
+    let theme: Theme
     @Published private(set) var text: String = ""
 
     var settings: DishtrackerSettings {
@@ -70,7 +70,6 @@ final class ContentViewModel: ObservableObject {
 
 @MainActor
 struct ContentView: View {
-    @Environment(\.theme) var theme
     @ObservedObject var viewModel: ContentViewModel
     @EnvironmentObject var sceneDelegate: SceneDelegate
 
@@ -84,13 +83,15 @@ struct ContentView: View {
 
                 Spacer()
 
-                Button {
-                    self.startCheckoutScan()
-                } label: {
-                    Text("Start Checkout Scan")
+                if let location = self.viewModel.location {
+                    Button {
+                        self.startCheckoutScan()
+                    } label: {
+                        Text("Start Checkout Scan")
+                    }
+                    .frame(height: 48)
+                    .foregroundColor(self.viewModel.theme.primary.color)
                 }
-                .frame(height: 48)
-                .foregroundColor(self.theme.primary.color)
 
                 Button {
                     self.showingSetupAlert = true
@@ -98,7 +99,7 @@ struct ContentView: View {
                     Text("Setup Location")
                 }
                 .frame(height: 48)
-                .foregroundColor(self.theme.secondary.color)
+                .foregroundColor(self.viewModel.theme.secondary.color)
                 .actionSheet(isPresented: self.$showingSetupAlert) {
                     let locations: [Location] = [
                     ]
@@ -141,7 +142,7 @@ struct ContentView: View {
         .foregroundColor(.black)
         .edgesIgnoringSafeArea(.all)
         .ignoresSafeArea()
-        .background(self.theme.background.color)
+        .background(self.viewModel.theme.background.color)
     }
 
     private let userSettings = DishtrackerUserSettings(
