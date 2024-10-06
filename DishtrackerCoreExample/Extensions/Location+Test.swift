@@ -14,4 +14,7 @@ extension Location {
         locationID: "locationID",
         name: "Demo"
     )
+
+extension String {
+    static let authDev = "Bearer xxx"
 }

@@ -7,3 +7,8 @@
 */
 
 "NSCameraUsageDescription" = "App needs camera for user input";
+
+"StartLocationScan" = "Start scan Location";
+"SetupLocation" = "Setup Location";
+"ChooseOne" = "Choose one:";
+"StartCheckoutScan" = "Start Checkout";

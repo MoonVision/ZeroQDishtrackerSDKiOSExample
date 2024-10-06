@@ -1,5 +1,5 @@
 {
-  "originHash" : "1d631fa2bc019103ed29a83101bb59719925e39417f0dd12db81bd47a6baf72d",
+  "originHash" : "1d4b63397118aa60dd055cd0539fa3aedbf83eeee989be0c6b9bfc6b64929597",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -11,30 +11,12 @@
       }
     },
     {
-      "identity" : "ampoptip",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/andreamazz/AMPopTip",
-      "state" : {
-        "revision" : "db495eea0747a3493ca8b3c737d037c0090973db",
-        "version" : "4.12.0"
-      }
-    },
-    {
       "identity" : "r.swift.library",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mac-cain13/R.swift.Library",
       "state" : {
         "revision" : "8998cfe77f4fce79ee6dfab0c88a7d551659d8fb",
         "version" : "5.4.0"
-      }
-    },
-    {
-      "identity" : "swipecellkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SwipeCellKit/SwipeCellKit",
-      "state" : {
-        "revision" : "7219cad3098637176ace311510d11467dbfb9bb0",
-        "version" : "2.7.1"
       }
     }
   ],

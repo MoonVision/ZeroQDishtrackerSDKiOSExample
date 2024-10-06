@@ -7,3 +7,8 @@
 */
 
 "NSCameraUsageDescription" = "Die App benötigt die Kamera für die Eingabe";
+
+"StartLocationScan" = "Location scan starten";
+"SetupLocation" = "Location Einstellen";
+"ChooseOne" = "Bitte wählen:";
+"StartCheckoutScan" = "Checkout starten";
