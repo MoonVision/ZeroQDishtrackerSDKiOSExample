@@ -17,4 +17,6 @@ extension Location {
 
 extension String {
     static let authDev = "Bearer xxx"
+
+    static let authCloud = "Bearer xxx"
 }

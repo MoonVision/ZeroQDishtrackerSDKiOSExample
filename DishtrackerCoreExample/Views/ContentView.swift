@@ -38,9 +38,17 @@ final class ContentViewModel: ObservableObject {
         #endif
     }
 
-    func settings() -> DishtrackerSettings {
+    private func authThoken() -> String {
+        if let location, location.locationID.contains("dev") {
+            return .authDev
+        } else {
+            return .authCloud
+        }
+    }
+
+    private func settings() -> DishtrackerSettings {
         DishtrackerSettings(
-            authToken: .authDev,
+            authToken: self.authThoken(),
             theme: self.theme,
             locale: Locale.current,
             isFixedDesk: self.isFixedDesk,
@@ -63,7 +71,7 @@ final class ContentViewModel: ObservableObject {
         )
     }
 
-    lazy var dishtracker: Dishtracker = {
+    private(set) lazy var dishtracker: Dishtracker = {
         Dishtracker(
             application: UIApplication.shared,
             settings: self.settings(),
@@ -105,17 +113,22 @@ final class ContentViewModel: ObservableObject {
     }
 }
 
+@available(iOS 16.0, *)
 @MainActor
 struct ContentView: View {
     @ObservedObject var viewModel: ContentViewModel
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    @State private var showingSetupAlert = false
+
+    @State private var settingsDetent: PresentationDetent = UIDevice.isPad ? .large : .medium
+    @State private var showingSettings = false
+
+    @State private var showingLocationSetup = false
 
     var body: some View {
-        VStack(alignment: .center, spacing: 16) {
-            VStack(alignment: .center, spacing: 16) {
+        VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
+            VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
                 Section {
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8.0 * .dishtrackerScale2) {
                         Section {
                             Text(self.viewModel.text)
                                 .font(.body)
@@ -128,103 +141,13 @@ struct ContentView: View {
                 Spacer()
 
                 Section {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("SDK Settings")
-                            .foregroundStyle(self.viewModel.theme.primary.color)
-                            .font(.dishtrackerText)
-                        Toggle(
-                            "FixedDesk",
-                            isOn: Binding(
-                                get: {
-                                    self.viewModel.isFixedDesk
-                                },
-                                set: { newValue in
-                                    self.viewModel.isFixedDesk = newValue
-                                }
-                            )
-                        )
-                        Toggle(
-                            "Admin",
-                            isOn: Binding(
-                                get: {
-                                    self.viewModel.isAdmin
-                                },
-                                set: { newValue in
-                                    self.viewModel.isAdmin = newValue
-                                }
-                            )
-                        )
-                        Toggle(
-                            "Qualified",
-                            isOn:
-                                Binding(
-                                    get: {
-                                        self.viewModel.isQualified
-                                    },
-                                    set: { newValue in
-                                        self.viewModel.isQualified = newValue
-                                    }
-                                )
-                        )
-                        Toggle(
-                            "EndlessLoop (skip onCheckoutCompletion)",
-                            isOn: Binding(
-                                get: {
-                                    self.viewModel.isEndlessLoop
-                                },
-                                set: { newValue in
-                                    self.viewModel.isEndlessLoop = newValue
-                                }
-                            )
-                        )
-                        Toggle(
-                            "Autodetect",
-                            isOn: Binding(
-                                get: {
-                                    self.viewModel.isAutodetectOn
-                                },
-                                set: { newValue in
-                                    self.viewModel.isAutodetectOn = newValue
-                                }
-                            )
-                        )
-                        .disabled(true)
-                        Text("Demo Settings")
-                            .foregroundStyle(self.viewModel.theme.primary.color)
-                            .font(.dishtrackerText)
-                        Toggle(
-                            "MockAPI",
-                            isOn: Binding(
-                                get: {
-                                    self.viewModel.useMockAPI
-                                },
-                                set: { newValue in
-                                    self.viewModel.useMockAPI = newValue
-                                }
-                            )
-                        )
-                        Toggle(
-                            "StartWithEBon",
-                            isOn: Binding(
-                                get: {
-                                    self.viewModel.startWithEBon
-                                },
-                                set: { newValue in
-                                    self.viewModel.startWithEBon = newValue
-                                }
-                            )
-                        )
-                    }
-                }
-
-                Section {
-                    VStack(alignment: .center, spacing: 16) {
+                    VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
                         if self.viewModel.location != nil {
                             DishtrackerButtonView(
                                 model: DishtrackerButtonViewModel(
                                     title: R.string.localizable.startCheckoutScan(),
                                     style: .primary,
-                                    minWidth: .buttonWidth,
+                                    minWidth: .buttonWidth * 1.4,
                                     tintColor: self.viewModel.theme.primary,
                                     action: {
                                         self.startCheckoutScan()
@@ -235,23 +158,41 @@ struct ContentView: View {
 
                         DishtrackerButtonView(
                             model: DishtrackerButtonViewModel(
-                                title: R.string.localizable.setupLocation(),
+                                title: R.string.localizable.settings(),
                                 style: .secondary,
-                                minWidth: .buttonWidth,
+                                minWidth: .buttonWidth * 1.4,
                                 tintColor: self.viewModel.theme.primary,
                                 action: {
-                                    self.showingSetupAlert = true
+                                    self.showingSettings = true
                                 }
                             )
                         )
-                        .actionSheet(isPresented: self.$showingSetupAlert) {
+                        .sheet(isPresented: self.$showingSettings) {
+                            SettingsView(viewModel: self.viewModel)
+                                .presentationDetents(
+                                    [.medium, .large],
+                                    selection: self.$settingsDetent
+                                 )
+                        }
+
+                        DishtrackerButtonView(
+                            model: DishtrackerButtonViewModel(
+                                title: R.string.localizable.setupLocation(),
+                                style: .secondary,
+                                minWidth: .buttonWidth * 1.4,
+                                tintColor: self.viewModel.theme.primary,
+                                action: {
+                                    self.showingLocationSetup = true
+                                }
+                            )
+                        )
+                        .actionSheet(isPresented: self.$showingLocationSetup) {
                             let locations: [Location] = [
                                 .hellotessDev,
                                 .hellotessDevFeature,
-                                .apetito108000Rheine,
-                                .apetito108000RheineFeature
+                                .dishtrackerCloudDemo,
+                                .dishtrackerCloudDemoMobile
                             ]
-
                             var buttons: [ActionSheet.Button] = locations.map({ location in
                                 .default(Text(location.info)) {
                                     self.viewModel.setLocation(
@@ -283,19 +224,15 @@ struct ContentView: View {
                     }
                 }
             }
-            .padding(.top, 64)
-            .padding(.bottom, 64)
-            .padding(.horizontal, 64)
+            .padding(8 * .dishtrackerScale2)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             if self.viewModel.location == nil {
-                self.showingSetupAlert = true
+                self.showingLocationSetup = true
             }
         }
         .foregroundColor(.black)
-        .edgesIgnoringSafeArea(.all)
-        .ignoresSafeArea()
         .background(self.viewModel.theme.background.color)
     }
 
@@ -325,5 +262,106 @@ struct ContentView: View {
             window: window,
             userSettings: self.viewModel.userSettings()
         )
+    }
+}
+
+@MainActor
+struct SettingsView: View {
+    @ObservedObject var viewModel: ContentViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8.0 * .dishtrackerScale2) {
+            Text("SDK Settings")
+                .foregroundStyle(self.viewModel.theme.primary.color)
+                .font(.dishtrackerText)
+            Toggle(
+                "FixedDesk",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.isFixedDesk
+                    },
+                    set: { newValue in
+                        self.viewModel.isFixedDesk = newValue
+                        if !newValue {
+                            self.viewModel.startWithEBon = false
+                        }
+                    }
+                )
+            )
+            Toggle(
+                "Admin",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.isAdmin
+                    },
+                    set: { newValue in
+                        self.viewModel.isAdmin = newValue
+                    }
+                )
+            )
+            Toggle(
+                "Qualified",
+                isOn:
+                    Binding(
+                        get: {
+                            self.viewModel.isQualified
+                        },
+                        set: { newValue in
+                            self.viewModel.isQualified = newValue
+                        }
+                    )
+            )
+            Toggle(
+                "EndlessLoop (skip onCheckoutCompletion)",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.isEndlessLoop
+                    },
+                    set: { newValue in
+                        self.viewModel.isEndlessLoop = newValue
+                    }
+                )
+            )
+            Toggle(
+                "Autodetect",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.isAutodetectOn
+                    },
+                    set: { newValue in
+                        self.viewModel.isAutodetectOn = newValue
+                    }
+                )
+            )
+            .disabled(true)
+            Text("Demo Settings")
+                .foregroundStyle(self.viewModel.theme.primary.color)
+                .font(.dishtrackerText)
+            Toggle(
+                "MockAPI",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.useMockAPI
+                    },
+                    set: { newValue in
+                        self.viewModel.useMockAPI = newValue
+                    }
+                )
+            )
+            Toggle(
+                "StartWithEBon",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.startWithEBon
+                    },
+                    set: { newValue in
+                        self.viewModel.startWithEBon = newValue
+                    }
+                )
+            )
+            .disabled(!self.viewModel.isFixedDesk)
+        }
+        .padding(32 * .dishtrackerScale2)
+        .tint(self.viewModel.theme.primary.color)
     }
 }
