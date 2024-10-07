@@ -14,11 +14,15 @@ struct DishtrackerCoreExampleApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                viewModel: ContentViewModel(
-                    theme: self.delegate.theme
+            if #available(iOS 16.0, *) {
+                ContentView(
+                    viewModel: ContentViewModel(
+                        theme: self.delegate.theme
+                    )
                 )
-            )
+            } else {
+                EmptyView()
+            }
         }
     }
 }

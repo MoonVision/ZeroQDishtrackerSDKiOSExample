@@ -26,7 +26,7 @@ final class ContentViewModel: ObservableObject {
     init(theme: Theme) {
         self.theme = theme
         #if DEBUG
-        self.location = .hellotessDev
+        self.location = .dishtrackerCloudDemoMobile
         #endif
         self.text = "SDK BundleVersion: \(Dishtracker.bundleVersion)"
 
