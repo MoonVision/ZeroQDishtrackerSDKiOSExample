@@ -19,26 +19,26 @@ final class ContentViewModel: ObservableObject {
     @Published var isEndlessLoop = false
     @Published var isQualified = false
     @Published var isFixedDesk = false
-    @Published var isAutodetectOn = false
+    @Published var isDevMode = false
+    @Published var showScanInfoAlways = false
+    @Published var isAutodetectOn = true
     @Published var startWithEBon = false
     @Published var useMockAPI = false
 
     init(theme: Theme) {
         self.theme = theme
-        #if DEBUG
-        self.location = .dishtrackerCloudDemoMobile
-        #endif
         self.text = "SDK BundleVersion: \(Dishtracker.bundleVersion)"
-
-        #if DEBUG
-        self.isFixedDesk = false
-        self.useMockAPI = true
-        #else
         self.isFixedDesk = UIDevice.isPad
+        #if DEBUG
+        self.location = .hellotessDev
+        self.useMockAPI = Platform.isDebug
+        self.isAdmin = Platform.isDebug
+        self.isDevMode = Platform.isDebug
+        self.showScanInfoAlways = Platform.isDebug
         #endif
     }
 
-    private func authThoken() -> String {
+    private var authThoken: String {
         if let location, location.locationID.contains("dev") {
             return .authDev
         } else {
@@ -48,10 +48,11 @@ final class ContentViewModel: ObservableObject {
 
     private func settings() -> DishtrackerSettings {
         DishtrackerSettings(
-            authToken: self.authThoken(),
+            authToken: self.authThoken,
             theme: self.theme,
             locale: Locale.current,
             isFixedDesk: self.isFixedDesk,
+            isDevMode: self.isDevMode,
             isAutodetectOn: self.isAutodetectOn
         )
     }
@@ -66,6 +67,7 @@ final class ContentViewModel: ObservableObject {
         DishtrackerCheckoutSettings(
             isQualified: self.isQualified,
             isEndlessLoop: self.isEndlessLoop,
+            showScanInfoAlways: self.showScanInfoAlways,
             scanSettings: DishtrackerCheckoutScanSettings.mock(),
             eBonSettings: self.startWithEBon ? DishtrackerCheckoutEBonSettings.mock() : nil
         )
@@ -119,7 +121,7 @@ struct ContentView: View {
     @ObservedObject var viewModel: ContentViewModel
     @EnvironmentObject var sceneDelegate: SceneDelegate
 
-    @State private var settingsDetent: PresentationDetent = UIDevice.isPad ? .large : .medium
+    @State private var settingsDetent: PresentationDetent = .large
     @State private var showingSettings = false
 
     @State private var showingLocationSetup = false
@@ -170,7 +172,7 @@ struct ContentView: View {
                         .sheet(isPresented: self.$showingSettings) {
                             SettingsView(viewModel: self.viewModel)
                                 .presentationDetents(
-                                    [.medium, .large],
+                                    [.large],
                                     selection: self.$settingsDetent
                                  )
                         }
@@ -275,16 +277,13 @@ struct SettingsView: View {
                 .foregroundStyle(self.viewModel.theme.primary.color)
                 .font(.dishtrackerText)
             Toggle(
-                "FixedDesk",
+                "Autodetect",
                 isOn: Binding(
                     get: {
-                        self.viewModel.isFixedDesk
+                        self.viewModel.isAutodetectOn
                     },
                     set: { newValue in
-                        self.viewModel.isFixedDesk = newValue
-                        if !newValue {
-                            self.viewModel.startWithEBon = false
-                        }
+                        self.viewModel.isAutodetectOn = newValue
                     }
                 )
             )
@@ -296,6 +295,9 @@ struct SettingsView: View {
                     },
                     set: { newValue in
                         self.viewModel.isAdmin = newValue
+                        if !newValue {
+                            self.viewModel.isDevMode = false
+                        }
                     }
                 )
             )
@@ -312,6 +314,21 @@ struct SettingsView: View {
                     )
             )
             Toggle(
+                "FixedDesk (iPad only)",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.isFixedDesk
+                    },
+                    set: { newValue in
+                        self.viewModel.isFixedDesk = newValue
+                        if !newValue {
+                            self.viewModel.startWithEBon = false
+                        }
+                    }
+                )
+            )
+            .disabled(!UIDevice.isPad)
+            Toggle(
                 "EndlessLoop (skip onCheckoutCompletion)",
                 isOn: Binding(
                     get: {
@@ -323,17 +340,16 @@ struct SettingsView: View {
                 )
             )
             Toggle(
-                "Autodetect",
+                "ShowScanInfoAlways",
                 isOn: Binding(
                     get: {
-                        self.viewModel.isAutodetectOn
+                        self.viewModel.showScanInfoAlways
                     },
                     set: { newValue in
-                        self.viewModel.isAutodetectOn = newValue
+                        self.viewModel.showScanInfoAlways = newValue
                     }
                 )
             )
-            .disabled(true)
             Text("Demo Settings")
                 .foregroundStyle(self.viewModel.theme.primary.color)
                 .font(.dishtrackerText)
@@ -349,7 +365,19 @@ struct SettingsView: View {
                 )
             )
             Toggle(
-                "StartWithEBon",
+                "DevMode",
+                isOn: Binding(
+                    get: {
+                        self.viewModel.isDevMode
+                    },
+                    set: { newValue in
+                        self.viewModel.isDevMode = newValue
+                    }
+                )
+            )
+            .disabled(!self.viewModel.isAdmin)
+            Toggle(
+                "StartWithEBon (FixedDesk only)",
                 isOn: Binding(
                     get: {
                         self.viewModel.startWithEBon
@@ -365,3 +393,4 @@ struct SettingsView: View {
         .tint(self.viewModel.theme.primary.color)
     }
 }
+
