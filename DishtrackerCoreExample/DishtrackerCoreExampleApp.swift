@@ -14,14 +14,14 @@ struct DishtrackerCoreExampleApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if #available(iOS 16.0, *) {
+            if #available(iOS 17.0, *) {
                 ContentView(
                     viewModel: ContentViewModel(
                         theme: self.delegate.theme
                     )
                 )
             } else {
-                EmptyView()
+                Text("Min iOS 17.0 needed")
             }
         }
     }

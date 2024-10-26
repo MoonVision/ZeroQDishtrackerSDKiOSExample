@@ -21,9 +21,9 @@ final class ContentViewModel: ObservableObject {
     @Published var isFixedDesk = false
     @Published var isDevMode = false
     @Published var showScanInfoAlways = false
-    @Published var isAutodetectOn = true
     @Published var startWithEBon = false
     @Published var useMockAPI = false
+    @Published var isAutodetectOn = false
 
     init(theme: Theme) {
         self.theme = theme
@@ -32,10 +32,8 @@ final class ContentViewModel: ObservableObject {
         #if DEBUG
         self.location = .hellotessDev
         self.useMockAPI = Platform.isDebug
-        self.isAdmin = Platform.isDebug
-        self.isDevMode = Platform.isDebug
-        self.showScanInfoAlways = Platform.isDebug
         #endif
+        self.createOrUpdateDishtracker()
     }
 
     private var authThoken: String {
@@ -73,8 +71,8 @@ final class ContentViewModel: ObservableObject {
         )
     }
 
-    private(set) lazy var dishtracker: Dishtracker = {
-        Dishtracker(
+    private func createOrUpdateDishtracker() {
+        self.dishtracker = Dishtracker(
             application: UIApplication.shared,
             settings: self.settings(),
             onCancel: { [weak self] in
@@ -96,7 +94,8 @@ final class ContentViewModel: ObservableObject {
                 )
             }
         )
-    }()
+    }
+    private(set) var dishtracker: Dishtracker?
 
     private(set) var location: Location? {
         didSet {
@@ -113,9 +112,35 @@ final class ContentViewModel: ObservableObject {
     ) {
         self.location = location
     }
+
+    func startCheckoutScan(
+        window: UIWindow,
+        location: Location,
+        transactionID: String
+    ) {
+        self.createOrUpdateDishtracker()
+        self.dishtracker?.startCheckoutScan(
+            window: window,
+            location: location,
+            transactionID: transactionID,
+            userSettings: self.userSettings(),
+            checkoutSettings: self.checkoutSettings(),
+            useMockAPI: self.useMockAPI
+        )
+    }
+
+    func startLocationScan(
+        window: UIWindow
+    ) {
+        self.createOrUpdateDishtracker()
+        self.dishtracker?.startLocationScan(
+            window: window,
+            userSettings: self.userSettings()
+        )
+    }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 @MainActor
 struct ContentView: View {
     @ObservedObject var viewModel: ContentViewModel
@@ -123,12 +148,24 @@ struct ContentView: View {
 
     @State private var settingsDetent: PresentationDetent = .large
     @State private var showingSettings = false
-
     @State private var showingLocationSetup = false
+
+    @State private var size: CGSize = .zero
 
     var body: some View {
         VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
             VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
+                Image(
+                    "DT_Logo_RGB_K",
+                    bundle: Bundle(for: Dishtracker.self)
+                )
+                .resizable()
+                .frame(
+                    width: 224 * .dishtrackerScale2,
+                    height: 60 * .dishtrackerScale2
+                )
+                .padding(.bottom, 16)
+
                 Section {
                     VStack(alignment: .leading, spacing: 8.0 * .dishtrackerScale2) {
                         Section {
@@ -149,7 +186,7 @@ struct ContentView: View {
                                 model: DishtrackerButtonViewModel(
                                     title: R.string.localizable.startCheckoutScan(),
                                     style: .primary,
-                                    minWidth: .buttonWidth * 1.4,
+                                    minWidth: UIDevice.isPad ? .buttonWidth * 1.4 : self.size.width - 16,
                                     tintColor: self.viewModel.theme.primary,
                                     action: {
                                         self.startCheckoutScan()
@@ -162,7 +199,7 @@ struct ContentView: View {
                             model: DishtrackerButtonViewModel(
                                 title: R.string.localizable.settings(),
                                 style: .secondary,
-                                minWidth: .buttonWidth * 1.4,
+                                minWidth: UIDevice.isPad ? .buttonWidth * 1.4 : self.size.width - 16,
                                 tintColor: self.viewModel.theme.primary,
                                 action: {
                                     self.showingSettings = true
@@ -174,14 +211,14 @@ struct ContentView: View {
                                 .presentationDetents(
                                     [.large],
                                     selection: self.$settingsDetent
-                                 )
+                                )
                         }
 
                         DishtrackerButtonView(
                             model: DishtrackerButtonViewModel(
                                 title: R.string.localizable.setupLocation(),
                                 style: .secondary,
-                                minWidth: .buttonWidth * 1.4,
+                                minWidth: UIDevice.isPad ? .buttonWidth * 1.4 : self.size.width - 16,
                                 tintColor: self.viewModel.theme.primary,
                                 action: {
                                     self.showingLocationSetup = true
@@ -218,7 +255,7 @@ struct ContentView: View {
                                     R.string.localizable.setupLocation()
                                 ),
                                 message: Text(
-                                    R.string.localizable.chooseOne()
+                                    R.string.localizable.pleaseSelectOne()
                                 ),
                                 buttons: buttons
                             )
@@ -234,6 +271,11 @@ struct ContentView: View {
                 self.showingLocationSetup = true
             }
         }
+        .onGeometryChange(for: CGSize.self) { geometry in
+            geometry.size
+        } action: {
+            self.size = $0
+        }
         .foregroundColor(.black)
         .background(self.viewModel.theme.background.color)
     }
@@ -246,13 +288,10 @@ struct ContentView: View {
             return
         }
 
-        self.viewModel.dishtracker.startCheckoutScan(
+        self.viewModel.startCheckoutScan(
             window: window,
             location: location,
-            transactionID: UUID().uuidString,
-            userSettings: self.viewModel.userSettings(),
-            checkoutSettings: self.viewModel.checkoutSettings(),
-            useMockAPI: self.viewModel.useMockAPI
+            transactionID: UUID().uuidString
         )
     }
 
@@ -260,9 +299,8 @@ struct ContentView: View {
         guard let window = self.sceneDelegate.window else {
             return
         }
-        self.viewModel.dishtracker.startLocationScan(
-            window: window,
-            userSettings: self.viewModel.userSettings()
+        self.viewModel.startLocationScan(
+            window: window
         )
     }
 }
@@ -393,4 +431,3 @@ struct SettingsView: View {
         .tint(self.viewModel.theme.primary.color)
     }
 }
-

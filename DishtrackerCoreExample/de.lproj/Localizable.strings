@@ -10,6 +10,6 @@
 
 "StartLocationScan" = "Location scan starten";
 "SetupLocation" = "Location Einstellen";
-"ChooseOne" = "Bitte wählen:";
+"PleaseSelectOne" = "Bitte eines wählen:";
 "StartCheckoutScan" = "Checkout starten";
 "Settings" = "Einstellungen";
