@@ -56,7 +56,8 @@ final class ContentViewModel: ObservableObject {
     }
 
     func userSettings() -> DishtrackerUserSettings {
-        DishtrackerUserSettings.mock(
+        DishtrackerUserSettings(
+            userID: UUID().uuidString,
             isAdmin: self.isAdmin
         )
     }
@@ -66,8 +67,11 @@ final class ContentViewModel: ObservableObject {
             isQualified: self.isQualified,
             isEndlessLoop: self.isEndlessLoop,
             showScanInfoAlways: self.showScanInfoAlways,
-            scanSettings: DishtrackerCheckoutScanSettings.mock(),
-            eBonSettings: self.startWithEBon ? DishtrackerCheckoutEBonSettings.mock() : nil
+            scanSettings: DishtrackerCheckoutScanSettings(),
+            eBonSettings: self.startWithEBon ? DishtrackerCheckoutEBonSettings(
+                image: UIImage.generateQRCode(from: UUID().uuidString)!,
+                buttonTitles: []
+            ) : nil
         )
     }
 
@@ -84,8 +88,8 @@ final class ContentViewModel: ObservableObject {
             onCheckoutCompletion: { [weak self] checkoutResult in
                 self?.text = checkoutResult.debugDescription
             },
-            onCheckoutButtonCompletion: { type, index in
-                print("Button pressed with type: \(type) at index: \(index)")
+            onCheckoutButtonCompletion: { checkoutButtonResult in
+                print("Button pressed with type: \(checkoutButtonResult.type) at index: \(checkoutButtonResult.index)")
             },
             onLocationCompletion: { [weak self] location in
                 guard let self else { return }
