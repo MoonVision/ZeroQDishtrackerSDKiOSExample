@@ -31,7 +31,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
         supportedInterfaceOrientationsFor
         window: UIWindow?
     ) -> UIInterfaceOrientationMask {
-        return .all
+        .all
     }
 
     func application(

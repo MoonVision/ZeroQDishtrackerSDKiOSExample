@@ -157,21 +157,21 @@ struct ContentView: View {
     @State private var size: CGSize = .zero
 
     var body: some View {
-        VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
-            VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
+        VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale18) {
+            VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale18) {
                 Image(
                     "DT_Logo_RGB_K",
                     bundle: Bundle(for: Dishtracker.self)
                 )
                 .resizable()
                 .frame(
-                    width: 224 * .dishtrackerScale2,
-                    height: 60 * .dishtrackerScale2
+                    width: 224 * .dishtrackerScale18,
+                    height: 60 * .dishtrackerScale18
                 )
                 .padding(.bottom, 16)
 
                 Section {
-                    VStack(alignment: .leading, spacing: 8.0 * .dishtrackerScale2) {
+                    VStack(alignment: .leading, spacing: 8.0 * .dishtrackerScale18) {
                         Section {
                             Text(self.viewModel.text)
                                 .font(.body)
@@ -184,7 +184,7 @@ struct ContentView: View {
                 Spacer()
 
                 Section {
-                    VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale2) {
+                    VStack(alignment: .center, spacing: 8.0 * .dishtrackerScale18) {
                         if self.viewModel.location != nil {
                             DishtrackerButtonView(
                                 model: DishtrackerButtonViewModel(
@@ -267,7 +267,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .padding(8 * .dishtrackerScale2)
+            .padding(8 * .dishtrackerScale18)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
@@ -314,7 +314,7 @@ struct SettingsView: View {
     @ObservedObject var viewModel: ContentViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8.0 * .dishtrackerScale2) {
+        VStack(alignment: .leading, spacing: 8.0 * .dishtrackerScale18) {
             Text("SDK Settings")
                 .foregroundStyle(self.viewModel.theme.primary.color)
                 .font(.dishtrackerText)
@@ -431,7 +431,7 @@ struct SettingsView: View {
             )
             .disabled(!self.viewModel.isFixedDesk)
         }
-        .padding(32 * .dishtrackerScale2)
+        .padding(32 * .dishtrackerScale18)
         .tint(self.viewModel.theme.primary.color)
     }
 }
