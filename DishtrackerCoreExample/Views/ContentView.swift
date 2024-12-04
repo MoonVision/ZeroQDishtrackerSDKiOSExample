@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Combine
+import Rswift
 import DishtrackerCore
 
 @MainActor
@@ -70,7 +71,13 @@ final class ContentViewModel: ObservableObject {
             scanSettings: DishtrackerCheckoutScanSettings(),
             eBonSettings: self.startWithEBon ? DishtrackerCheckoutEBonSettings(
                 image: UIImage.generateQRCode(from: UUID().uuidString)!,
-                buttonTitles: []
+                buttonTitles: [
+                    R.string.localizable.printReceipt(
+                        preferredLanguages: []
+                    )
+                ],
+                dismissAfter: 10.0,
+                expiresAfter: 30.0
             ) : nil
         )
     }

@@ -9,7 +9,9 @@
 "NSCameraUsageDescription" = "Die App benötigt die Kamera für die Eingabe";
 
 "StartLocationScan" = "Location scan starten";
-"SetupLocation" = "Location Einstellen";
+"SetupLocation" = "Location einstellen";
 "PleaseSelectOne" = "Bitte eines wählen:";
 "StartCheckoutScan" = "Checkout starten";
 "Settings" = "Einstellungen";
+
+"PrintReceipt" = "Rechnung drucken";

@@ -8,8 +8,10 @@
 
 "NSCameraUsageDescription" = "App needs camera for user input";
 
-"StartLocationScan" = "Start scan Location";
-"SetupLocation" = "Setup Location";
+"StartLocationScan" = "Start scan location";
+"SetupLocation" = "Setup location";
 "PleaseSelectOne" = "Choose one:";
-"StartCheckoutScan" = "Start Checkout";
+"StartCheckoutScan" = "Start checkout";
 "Settings" = "Settings";
+
+"PrintReceipt" = "Print receipt";
