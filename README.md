@@ -12,6 +12,10 @@ This is the SPM example app for [DishtrackerSDK for iOS](https://github.com/Moon
 * Follow the steps in Xcode to clone and open the project.
 * Build and run.
 
+## CI Build Artifact
+
+GitHub Actions produces an unsigned device build artifact (`DishtrackerCoreExample-iphoneos`) as a zipped `.app`. Download it from the workflow run artifacts and re-sign it if you plan to distribute it (for example, via Firebase App Distribution).
+
 ## License
 
 This software is licensed under a [modified BSD license](LICENSE).

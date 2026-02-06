@@ -1,0 +1,43 @@
+name: iOS Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch Dishtracker SDK dependency
+        run: git clone --depth 1 https://github.com/MoonVision/ZeroQDishtrackerSDKiOS.git ../ZeroQDishtrackerSDKiOS
+
+      - name: Build iOS app (unsigned)
+        run: |
+          xcodebuild \
+            -project DishtrackerCoreExample.xcodeproj \
+            -target DishtrackerCoreExample \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_IDENTITY=""
+
+      - name: Package app artifact
+        run: |
+          mkdir -p artifacts
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/Build/Products/Release-iphoneos/DishtrackerCoreExample.app \
+            artifacts/DishtrackerCoreExample.app.zip
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DishtrackerCoreExample-iphoneos
+          path: artifacts/DishtrackerCoreExample.app.zip
