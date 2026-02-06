@@ -19,7 +19,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Fetch Dishtracker SDK dependency
-        run: git clone --depth 1 https://github.com/MoonVision/ZeroQDishtrackerSDKiOS.git ../ZeroQDishtrackerSDKiOS
+        env:
+          SDK_TOKEN: ${{ secrets.DISHTRACKER_SDK_TOKEN || github.token }}
+        run: |
+          GIT_TERMINAL_PROMPT=0 git clone --depth 1 \
+            https://x-access-token:${SDK_TOKEN}@github.com/MoonVision/ZeroQDishtrackerSDKiOS.git \
+            ../ZeroQDishtrackerSDKiOS
 
       - name: Build iOS app (unsigned)
         run: |
