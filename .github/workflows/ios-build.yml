@@ -30,7 +30,7 @@ jobs:
         run: |
           xcodebuild \
             -project DishtrackerCoreExample.xcodeproj \
-            -target DishtrackerCoreExample \
+            -scheme DishtrackerCoreExample \
             -configuration Release \
             -sdk iphoneos \
             -derivedDataPath build \
